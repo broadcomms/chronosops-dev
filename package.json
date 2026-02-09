@@ -1,0 +1,50 @@
+{
+  "name": "chronosops",
+  "version": "0.1.0",
+  "description": "Self-regenerating autonomous incident response agent powered by Gemini Pro, designed to operate within Kubernetes environments and execute OODA loops for regenerative app development and efficient incident management.",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0",
+    "pnpm": ">=8.0.0"
+  },
+  "packageManager": "pnpm@8.15.0",
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @chronosops/api dev\" \"pnpm --filter @chronosops/web dev\"",
+    "build": "pnpm -r build",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:unit": "vitest run --testPathPattern=unit",
+    "test:integration": "vitest run --testPathPattern=integration",
+    "test:e2e": "pnpm --filter @chronosops/web test:e2e",
+    "test:coverage": "vitest run --coverage",
+    "lint": "pnpm -r lint",
+    "lint:fix": "pnpm -r lint:fix",
+    "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md}\"",
+    "typecheck": "pnpm -r typecheck",
+    "clean": "pnpm -r clean && rm -rf node_modules",
+    "prepare": "husky install || true"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@vitest/coverage-v8": "^4.0.16",
+    "concurrently": "^8.2.2",
+    "husky": "^8.0.3",
+    "msw": "^2.12.7",
+    "prettier": "^3.1.1",
+    "typescript": "^5.3.0",
+    "vitest": "^4.0.16"
+  },
+  "keywords": [
+    "incident-response",
+    "gemini",
+    "kubernetes",
+    "ooda-loop",
+    "autonomous-agent",
+    "devops",
+    "sre"
+  ],
+  "author": "ChronosOps Team",
+  "license": "MIT"
+}

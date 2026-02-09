@@ -1,0 +1,80 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Dependencies (will be reinstalled in Docker)
+node_modules
+.pnpm-store
+
+# Environment files (secrets should come from K8s secrets)
+.env
+.env.local
+.env.*.local
+# NOTE: .env.production is NOT ignored - it's needed for Vite build
+
+# Development files
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.npm
+.yarn
+
+# Test and coverage
+coverage
+.nyc_output
+**/*.test.ts
+**/*.spec.ts
+tests/
+__tests__/
+vitest.config.ts
+
+# Build artifacts that will be regenerated
+**/dist
+**/*.tsbuildinfo
+
+# IDE and editor
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+# Local data (production uses persistent volumes)
+data/
+*.db
+*.sqlite
+
+# Documentation (not needed in container)
+docs/
+*.md
+!README.md
+LICENSE
+
+# Demo and development tools
+demo/
+k8s/
+.claude/
+
+# Playwright
+playwright-report/
+playwright/.cache/
+
+# Misc
+*.tgz
+*.tar.gz
+.turbo

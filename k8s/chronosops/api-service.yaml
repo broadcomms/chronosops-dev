@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: chronosops-api
+  namespace: chronosops
+  labels:
+    app.kubernetes.io/name: chronosops
+    app.kubernetes.io/component: api
+  annotations:
+    # Reference BackendConfig for WebSocket timeout
+    cloud.google.com/backend-config: '{"default": "chronosops-backend-config"}'
+spec:
+  type: ClusterIP
+  selector:
+    app: chronosops-api
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+      protocol: TCP

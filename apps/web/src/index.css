@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-gray-900;
+  }
+
+  body {
+    @apply antialiased bg-gray-900 min-h-screen;
+  }
+
+  #root {
+    @apply bg-gray-900 min-h-screen;
+  }
+}
+
+@layer components {
+  .ooda-phase {
+    @apply rounded-lg p-4 transition-all duration-300;
+  }
+
+  .ooda-phase-observe {
+    @apply bg-observe/10 border border-observe/30;
+  }
+
+  .ooda-phase-orient {
+    @apply bg-orient/10 border border-orient/30;
+  }
+
+  .ooda-phase-decide {
+    @apply bg-decide/10 border border-decide/30;
+  }
+
+  .ooda-phase-act {
+    @apply bg-act/10 border border-act/30;
+  }
+
+  .ooda-phase-verify {
+    @apply bg-verify/10 border border-verify/30;
+  }
+}

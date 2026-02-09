@@ -1,0 +1,50 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: chronosops-daily-reset
+  namespace: chronosops
+  labels:
+    app: chronosops
+    component: cleanup
+spec:
+  # Run at midnight UTC every day
+  schedule: "0 0 * * *"
+  # Don't allow concurrent cleanup jobs
+  concurrencyPolicy: Forbid
+  # Keep history for debugging
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      # Job will be considered failed if not complete in 10 minutes
+      activeDeadlineSeconds: 600
+      template:
+        metadata:
+          labels:
+            app: chronosops
+            component: cleanup-job
+        spec:
+          # Use the chronosops service account with K8s + GCP permissions
+          serviceAccountName: chronosops
+          restartPolicy: OnFailure
+          containers:
+          - name: cleanup
+            # google/cloud-sdk:slim includes both kubectl and gcloud CLI
+            image: google/cloud-sdk:slim
+            command: ["/bin/bash", "/scripts/cleanup.sh"]
+            resources:
+              requests:
+                cpu: "100m"
+                memory: "256Mi"
+              limits:
+                cpu: "500m"
+                memory: "512Mi"
+            volumeMounts:
+            - name: cleanup-script
+              mountPath: /scripts
+              readOnly: true
+          volumes:
+          - name: cleanup-script
+            configMap:
+              name: chronosops-cleanup-script
+              defaultMode: 0755

@@ -1,0 +1,9 @@
+# Monitoring Namespace for ChronosOps
+# Contains Prometheus and Grafana for dynamic app monitoring
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+  labels:
+    app.kubernetes.io/name: chronosops-monitoring
+    app.kubernetes.io/part-of: chronosops

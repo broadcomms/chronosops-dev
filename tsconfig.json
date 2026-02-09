@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.base.json",
+  "files": [],
+  "references": [
+    { "path": "./packages/shared" },
+    { "path": "./packages/core" },
+    { "path": "./packages/gemini" },
+    { "path": "./packages/video" },
+    { "path": "./packages/kubernetes" },
+    { "path": "./packages/database" },
+    { "path": "./apps/api" }
+  ]
+}

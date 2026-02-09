@@ -1,0 +1,8 @@
+apiVersion: networking.gke.io/v1
+kind: ManagedCertificate
+metadata:
+  name: chronosops-cert
+  namespace: chronosops
+spec:
+  domains:
+    - chronosops.boilerplate.online

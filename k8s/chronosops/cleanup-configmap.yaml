@@ -1,0 +1,52 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chronosops-cleanup-script
+  namespace: chronosops
+data:
+  cleanup.sh: |
+    #!/bin/bash
+    set -e
+    echo "=== ChronosOps Daily Reset - $(date) ==="
+
+    # Install kubectl (not included in google/cloud-sdk:slim)
+    echo "Installing kubectl..."
+    apt-get update -qq && apt-get install -y -qq kubectl > /dev/null 2>&1
+
+    # Use in-cluster credentials (service account token mounted automatically)
+    # This uses Kubernetes RBAC, not GCP IAM
+    echo "Using in-cluster Kubernetes credentials..."
+
+    # 1. Delete all resources in development namespace
+    echo "Step 1: Cleaning up development namespace..."
+    kubectl delete deployments --all -n development --ignore-not-found=true
+    kubectl delete services --all -n development --ignore-not-found=true
+    kubectl delete pods --all -n development --ignore-not-found=true
+    echo "Development namespace cleaned."
+
+    # 2. Clean up Artifact Registry images (generated apps only)
+    echo "Step 2: Cleaning up Artifact Registry images..."
+    REGISTRY="us-central1-docker.pkg.dev/chronosops-hackathon/chronosops"
+
+    # List all images and delete those that are NOT chronosops-api
+    gcloud artifacts docker images list "$REGISTRY" \
+      --include-tags --format="value(IMAGE)" 2>/dev/null | sort -u | while read image; do
+      # Skip the main chronosops-api image
+      if [[ "$image" == *"chronosops-api"* ]]; then
+        echo "Skipping: $image (protected)"
+        continue
+      fi
+
+      echo "Deleting image: $image"
+      # Delete all tags/digests for this image
+      gcloud artifacts docker images delete "$image" --delete-tags --quiet 2>/dev/null || true
+    done
+    echo "Artifact Registry cleaned."
+
+    # 3. Restart chronosops-api (resets SQLite database)
+    echo "Step 3: Restarting chronosops-api..."
+    kubectl rollout restart deployment/chronosops-api -n chronosops
+    kubectl rollout status deployment/chronosops-api -n chronosops --timeout=120s
+    echo "ChronosOps API restarted."
+
+    echo "=== Reset Complete ==="

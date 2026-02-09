@@ -1,0 +1,42 @@
+{
+  "name": "@chronosops/core",
+  "version": "0.1.0",
+  "description": "OODA state machine and orchestration for ChronosOps",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "test": "vitest run",
+    "test:unit": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "typecheck": "tsc --noEmit",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@chronosops/database": "workspace:*",
+    "@chronosops/gemini": "workspace:*",
+    "@chronosops/git": "workspace:*",
+    "@chronosops/kubernetes": "workspace:*",
+    "@chronosops/shared": "workspace:*",
+    "@chronosops/vision": "workspace:*",
+    "@kubernetes/client-node": "^0.20.0",
+    "eventemitter3": "^5.0.1",
+    "yaml": "^2.4.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.0",
+    "vitest": "^1.1.0"
+  }
+}

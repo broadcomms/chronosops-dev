@@ -1,0 +1,32 @@
+{
+  "name": "@chronosops/git",
+  "version": "0.1.0",
+  "description": "Git integration for ChronosOps - local and GitHub operations",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@chronosops/shared": "workspace:*",
+    "@octokit/rest": "^21.0.0",
+    "simple-git": "^3.27.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@chronosops/shared": "workspace:*"
+  }
+}

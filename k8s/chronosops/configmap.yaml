@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: chronosops-config
+  namespace: chronosops
+  labels:
+    app.kubernetes.io/name: chronosops
+data:
+  # Server configuration
+  NODE_ENV: "production"
+  PORT: "8080"
+  HOST: "0.0.0.0"
+
+  # Database
+  DATABASE_PATH: "/app/data/chronosops.db"
+
+  # Kubernetes execution
+  EXECUTION_MODE: "KUBERNETES"
+  K8S_DRY_RUN: "false"
+  K8S_ALLOWED_NAMESPACES: "development,monitoring,database"
+  K8S_ALLOWED_ACTIONS: "rollback,restart,scale,apply,create"
+
+  # Prometheus (internal cluster DNS)
+  PROMETHEUS_URL: "http://prometheus.monitoring.svc.cluster.local:9090"
+
+  # Skip local prometheus.yml updates (config managed by K8s ConfigMaps in GKE)
+  SKIP_PROMETHEUS_CONFIG_UPDATE: "true"
+
+  # External host for NodePort services (set to GKE node external IP or LoadBalancer IP)
+  # Users can set this via: kubectl patch configmap chronosops-config -n chronosops --type merge -p '{"data":{"K8S_EXTERNAL_HOST":"<YOUR_NODE_IP>"}}'
+  # Or auto-detect by leaving unset (k8s-client.ts will attempt to detect node external IP)
+  # K8S_EXTERNAL_HOST: ""
+
+  # PostgreSQL (internal cluster DNS)
+  POSTGRES_HOST: "chronosops-postgres.database.svc.cluster.local"
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: "postgres"
+
+  # Anomaly Detection
+  ANOMALY_DETECTION_MODE: "hybrid"
+  DETECTION_ENABLED: "true"
+  DETECTION_INTERVAL_MS: "30000"
+  DETECTION_MIN_SEVERITY: "medium"
+
+  # Code Evolution
+  CODE_EVOLUTION_AUTO_APPROVE: "false"
+  USE_ESCALATING_REMEDIATION: "true"
+
+  # Docker Registry (Artifact Registry)
+  DOCKER_REGISTRY: "us-central1-docker.pkg.dev/chronosops-hackathon/chronosops"
+
+  # Docker Build Mode (kaniko for in-cluster builds)
+  DOCKER_BUILD_MODE: "kaniko"
+  KANIKO_NAMESPACE: "development"
+  KANIKO_SERVICE_ACCOUNT: "chronosops"
+
+  # Gemini Models
+  GEMINI_MODEL: "gemini-3-flash-preview"
+  GEMINI_PRO_MODEL: "gemini-3-pro-preview"

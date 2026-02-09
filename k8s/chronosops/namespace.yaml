@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: chronosops
+  labels:
+    app.kubernetes.io/name: chronosops
+    app.kubernetes.io/component: platform

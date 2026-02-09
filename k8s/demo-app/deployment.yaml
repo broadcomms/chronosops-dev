@@ -1,0 +1,63 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-app
+  namespace: demo
+  labels:
+    app: demo-app
+    app.kubernetes.io/name: demo-app
+    app.kubernetes.io/component: application
+  annotations:
+    kubernetes.io/change-cause: "Deploy v1.1 with Smart Recommendations bug"
+spec:
+  replicas: 3
+  revisionHistoryLimit: 10  # Keep rollback history for real rollback demos
+  selector:
+    matchLabels:
+      app: demo-app
+  template:
+    metadata:
+      labels:
+        app: demo-app
+        version: v1.1
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+      - name: demo-app
+        image: chronosops-demo-app:v1.1  # Versioned tag for real rollback
+        imagePullPolicy: Never  # Use local Docker image (Docker Desktop)
+        ports:
+        - containerPort: 8080
+          name: http
+          protocol: TCP
+        env:
+        - name: PORT
+          value: "8080"
+        - name: NODE_ENV
+          value: "production"
+        resources:
+          requests:
+            cpu: 100m
+            memory: 128Mi
+          limits:
+            cpu: 500m
+            memory: 512Mi
+        livenessProbe:
+          httpGet:
+            path: /health/live  # Always returns 200 - pod stays alive even when buggy
+            port: 8080
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 5
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health/ready  # Returns 503 when critical - stops traffic but doesn't restart
+            port: 8080
+          initialDelaySeconds: 5
+          periodSeconds: 5
+          timeoutSeconds: 3
+          failureThreshold: 3

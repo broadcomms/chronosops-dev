@@ -1,0 +1,83 @@
+# Cloud Build configuration for ChronosOps GKE deployment
+#
+# Usage:
+#   # Submit manually
+#   gcloud builds submit --config cloudbuild.yaml .
+#
+#   # Or set up a trigger for automatic builds on push
+#   gcloud builds triggers create github \
+#     --repo-name=ChronosOps \
+#     --repo-owner=YOUR_GITHUB_USERNAME \
+#     --branch-pattern="^main$" \
+#     --build-config=cloudbuild.yaml
+
+substitutions:
+  _REGION: us-central1
+  _ZONE: us-central1-a
+  _CLUSTER_NAME: chronosops-cluster
+  _NAMESPACE: chronosops
+
+steps:
+  # Step 1: Build the Docker image
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'build'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/chronosops/chronosops-api:${COMMIT_SHA}'
+      - '-t'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/chronosops/chronosops-api:latest'
+      - '.'
+    timeout: '1800s'  # 30 minutes for monorepo build
+
+  # Step 2: Push the image with commit SHA tag
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/chronosops/chronosops-api:${COMMIT_SHA}'
+
+  # Step 3: Push the image with latest tag
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      - 'push'
+      - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/chronosops/chronosops-api:latest'
+
+  # Step 4: Get GKE credentials
+  - name: 'gcr.io/cloud-builders/gke-deploy'
+    args:
+      - 'prepare'
+      - '--filename=k8s/chronosops/'
+      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/chronosops/chronosops-api:${COMMIT_SHA}'
+      - '--app=chronosops-api'
+
+  # Step 5: Deploy to GKE
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        gcloud container clusters get-credentials ${_CLUSTER_NAME} --zone=${_ZONE}
+
+        # Update the image in the deployment
+        kubectl set image deployment/chronosops-api \
+          chronosops-api=${_REGION}-docker.pkg.dev/${PROJECT_ID}/chronosops/chronosops-api:${COMMIT_SHA} \
+          -n ${_NAMESPACE}
+
+        # Wait for rollout to complete
+        kubectl rollout status deployment/chronosops-api -n ${_NAMESPACE} --timeout=300s
+
+        # Verify the deployment
+        kubectl get pods -n ${_NAMESPACE} -l app=chronosops-api
+
+# Push images to Artifact Registry
+images:
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/chronosops/chronosops-api:${COMMIT_SHA}'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/chronosops/chronosops-api:latest'
+
+# Build options
+options:
+  machineType: 'E2_HIGHCPU_8'
+  logging: CLOUD_LOGGING_ONLY
+  substitutionOption: 'ALLOW_LOOSE'
+
+# Build timeout (45 minutes total)
+timeout: '2700s'

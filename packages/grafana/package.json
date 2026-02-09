@@ -1,0 +1,19 @@
+{
+  "name": "@chronosops/grafana",
+  "version": "0.1.0",
+  "description": "Grafana API client for dashboard auto-generation",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@chronosops/shared": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.0"
+  }
+}

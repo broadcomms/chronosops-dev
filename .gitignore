@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+dist/
+# Note: Using /build/ to only match root build folder, not packages/*/src/build/ source directories
+/build/
+*.tsbuildinfo
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Database
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+data/
+
+# Drizzle
+drizzle/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+
+# Video processing temp files
+chronosops-frames-*/
+
+# Demo recordings (keep .gitkeep)
+demo/recordings/*
+!demo/recordings/.gitkeep
+
+# Secrets
+*.pem
+*.key
+credentials.json
+service-account.json

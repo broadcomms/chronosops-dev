@@ -1,0 +1,35 @@
+{
+  "name": "@chronosops/kubernetes",
+  "version": "0.1.0",
+  "description": "Kubernetes client and remediation actions for ChronosOps",
+  "type": "module",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@chronosops/shared": "workspace:*",
+    "@kubernetes/client-node": "^0.20.0",
+    "js-yaml": "^4.1.0",
+    "pg": "^8.13.1"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/pg": "^8.11.10",
+    "typescript": "^5.3.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "@chronosops/shared": "workspace:*"
+  }
+}
