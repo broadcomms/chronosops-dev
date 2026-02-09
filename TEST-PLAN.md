@@ -284,6 +284,7 @@ Create a REST API for managing users with CRUD operations. Include a subtle bug 
 3. If the cycle fails repeatedly at VERIFYING:
    - Cancel the cycle
    - Delete the app
+   - Ensure prompt injection is enabled in development setting
    - Create a new cycle (the randomness may pass next time)
 
 ### Step 3.4: Verify the Bug Exists
@@ -295,12 +296,15 @@ Once deployed:
 3. Locate the **GET /users** endpoint
 4. The endpoing description should mention "simulated failure"
 5. Click **"Try it out"** then click → **"Execute"**
-6. Click the **Execute multiple times** (10-30 times)
-7. You should see approximately 25% of requests return `500 Internal Server Error`
+6. Click the **Execute multiple times** (10-30 times to trigger anomally detection)
+7. You should see approximately 50% of requests return `500 Internal Server Error`
+8. Continue Clicking execute to generate `500 Internal Server Error`
+
+IMPORTANT: You should continue clicking execute through out to simulate real production error, if you don't continue the system may verify after restart, and or scale action and think that the bug is gone, if the bug is still generaing errors it will continue to escalate until it triggers the evolution.
 
 ### Step 3.5: Generate Traffic to Trigger Detection
 
-1. **Continue executing the endpoint repeatedly** (50+ times)
+1. **Continue executing the endpoint repeatedly** (100+ times to trigger real production requests)
 2. This generates error traffic that accumulates in the monitoring system
 3. The error rate should spike above the 5% detection threshold to trigger the incident creation
 
@@ -313,6 +317,8 @@ Once deployed:
 5. The investigation will start automatically
 6. Select the view incident from the notification to watch the investigation in action
 
+Ensure to keep executing the /users endpoint to keep generating the error through the cycle until it is resolved.
+
 > **Note**: Detection may take 1-2 minutes as the system collects enough data points to decide if it has to create an incident.
 
 ### Step 3.7: Watch the Self-Healing Process
@@ -323,7 +329,7 @@ Once the incident is create, the investigation will progress through:
 | ------------------- | ----------------------------------------------------------- |
 | **OBSERVING** | AI watches dashboard, collects error frames                 |
 | **ORIENTING** | Correlates high error rate with code behavior               |
-| **DECIDING**  | Identifies the `Math.random() < 0.25` logic as root cause |
+| **DECIDING**  | Identifies the `Math.random() < 0.50` logic as root cause |
 | **ACTING**    | Attempts rollback first (will fail - no previous version)   |
 | **ACTING**    | Escalates to**Code Evolution**                        |
 
@@ -345,7 +351,7 @@ Navigate to the App Development Cycle details page, and click on the **"Edit Cod
    - Evolution status (In Progress → Completed)
 3. Review the **Proposed Changes** (diff view showing the fix)
 4. The system will:
-   - Remove the `Math.random() < 0.25` error logic
+   - Remove the `Math.random() < 0.5` error logic
    - Regenerate tests
    - Rebuild the Docker image
    - Deploy the fixed version
@@ -354,8 +360,8 @@ You could also see the evolution actions to revert the changes, rebuild and depl
 
 ### Step 3.9: Confirm Resolution
 Navigate back to the Incidents dashboard and open the Incident details view to confirm the resolution:
-1. The investigation should complete with status **"DONE"**
-2. The application should now show **healthy** status (green)
+1. The investigation should complete with status **"DONE"** or **RESOLVED** in the incident details view
+2. The application should now show **healthy** status (green) after some time
 3. Test the API again by Executing the /users endpoing there should be no more random 500 errors!
 
 ### Expected Outcome
@@ -372,10 +378,10 @@ Navigate back to the Incidents dashboard and open the Incident details view to c
 
 | Issue                            | Solution                                                                                        |
 | -------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Cycle keeps failing at VERIFYING | Cancel, delete, and recreate. The 25% failure is random.                                        |
-| No monitoring graph appears      | Delete the cycle, wait 30 seconds, recreate. Check that the namespace has the monitoring label. |
+| Cycle keeps failing at VERIFYING | Cancel, delete, and recreate. The 50% failure is random. To ensure it doesn't get caught again at VERIFING enable Prompt Injection in the Development Setting (Orange)                                        |
+| No monitoring graph appears      | Refresh the browser. If persist, delete the cycle, wait 30 seconds, recreate. Check that the namespace has the monitoring label. |
 | Incident not auto-created        | Continue generating traffic. Ensure error rate is sustained above 5% for at least 30 seconds.   |
-| Code Evolution not triggered     | Check if simpler remediations (rollback) succeeded. Code Evolution is the last resort.          |
+| Code Evolution not triggered     | Check if simpler remediations (rollback) succeeded. Code Evolution is the last resort if errors does not go away.          |
 | API docs don't load              | The pod may not be ready. Wait 60 seconds and refresh. If still failing, delete and recreate.   |
 
 ---
