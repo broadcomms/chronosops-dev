@@ -13,11 +13,13 @@
 
 ## Quick Reference
 
+Test 3 is the **key demonstration** for ChronosOps full self-regeneration capabilities.
+
 | Test Scenario                                                                                    | Estimated Time | Difficulty |
 | ------------------------------------------------------------------------------------------------ | -------------- | ---------- |
 | [Test 1: Standard API Generation](#test-1-standard-api-generation)                                  | 10-15 minutes  | Easy       |
 | [Test 2: Manual Incident Investigation](#test-2-manual-incident-investigation)                      | 5-10 minutes   | Easy       |
-| [Test 3: Flaky App with Self-Healing Evolution](#test-3-flaky-app-with-self-healing-code-evolution) | 15-25 minutes  | Medium     |
+| [Test 3: Flaky App with Self-Healing Evolution](#test-3-flaky-app-with-self-healing-code-evolution) **KEY DEOM** | 15-25 minutes  | Medium     |
 | [Test 4: Fault Injection Endpoints](#test-4-fault-injection-endpoints-for-remediation-testing)      | 10-15 minutes  | Medium     |
 | [Test 5: Prompt Injection Testing Mode](#test-5-prompt-injection-testing-mode)                      | 15-20 minutes  | Advanced   |
 | [Test 6: Manual Code Evolution](#test-6-manual-code-evolution)                                      | 10-15 minutes  | Easy       |
@@ -787,7 +789,7 @@ ChronosOps implements **escalating remediation** - starting with the safest acti
 | **502 Bad Gateway**              | Pod starting up                | Wait 30-60 seconds for readiness probe to pass.             |
 | **Flaky app won't deploy**       | 500 errors during verification | Enable Prompt Injection Testing, or retry (random chance).  |
 
----
+--- 
 
 ## Summary: The Complete ChronosOps Journey
 
