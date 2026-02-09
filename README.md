@@ -143,8 +143,6 @@ pnpm dev
 Access the UI: http://localhost:5174/
 
 
-
-
 ### API Server
 
 The API runs on port 3000, Web UI on port 5173.

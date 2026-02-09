@@ -16,9 +16,13 @@ scrape_configs:
   # Targets auto-configured when apps are deployed via Development Dashboard
   - job_name: 'chronosops-apps'
     static_configs:
-      - targets: ['host.docker.internal:30756']
+      - targets: ['host.docker.internal:32548']
         labels:
-          app: 'product-management-rest-api-with-paginat-462d942a'
+          app: 'user-authentication-rest-api-016a6859'
+          namespace: 'development'
+      - targets: ['host.docker.internal:31826']
+        labels:
+          app: 'user-management-crud-api-with-simulated--61063888'
           namespace: 'development'
     metrics_path: /metrics
     scheme: http

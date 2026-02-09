@@ -268,7 +268,7 @@ This setting bypasses 500 errors during initial verification when the requiremen
 3. **Copy and paste this EXACT requirement**:
 
 ```
-Create a REST API for managing users with CRUD operations. Include a subtle bug in the GET /users endpoint: randomly return 500 Internal Server Error for about 25% of requests by throwing an error when Math.random() < 0.25 This simulates a production bug that needs to be fixed.
+Create a REST API for managing users with CRUD operations. Include a subtle bug in the GET /users endpoint: randomly return 500 Internal Server Error for about 50% of requests by throwing an error when Math.random() < 0.5 This simulates a production bug that needs to be fixed.
 ```
 
 > ⚠️ **CRITICAL**: The phrase "production bug that needs to be fixed" must be present for the verification bypass to work.
