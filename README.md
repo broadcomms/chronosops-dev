@@ -113,6 +113,12 @@ cd demo
 docker compose up -d
 cd .. 
 
+# Create Data default directory
+mkdir data
+
+# Build all packages
+pnpm build
+
 # Start development servers
 pnpm dev
 ```

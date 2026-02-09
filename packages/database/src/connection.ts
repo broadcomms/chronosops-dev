@@ -2,6 +2,8 @@
  * Database Connection
  */
 
+import { mkdirSync } from 'fs';
+import { dirname } from 'path';
 import Database from 'better-sqlite3';
 import { drizzle, BetterSQLite3Database } from 'drizzle-orm/better-sqlite3';
 import { createChildLogger } from '@chronosops/shared';
@@ -28,6 +30,9 @@ export function initializeDatabase(config: DatabaseConfig): DatabaseConnection {
   }
 
   logger.info('Initializing database', { path: config.path });
+
+  // Ensure the parent directory exists
+  mkdirSync(dirname(config.path), { recursive: true });
 
   sqliteInstance = new Database(config.path, {
     verbose: config.verbose ? (msg) => logger.debug(msg) : undefined,
