@@ -346,39 +346,39 @@ export class VisionService extends EventEmitter<VisionServiceEvents> {
     const startTime = new Date(endTime.getTime() - this.parseTimeRange(this.config.metricsTimeRange));
 
     // Query error rate over time
-    // Note: App metrics use pod=~ matching because pods are named ${deploymentName}-xxxxx-xxxxx
-    // This works when service names are kept under 50 chars (so K8s doesn't truncate them)
+    // Note: App metrics use app= label set by prometheus relabel config
     const errorRateSeries = await this.queryMetricSeries(
-      `sum(rate(http_requests_total{source_namespace="${namespace}", pod=~"${serviceName}.*", status=~"5.."}[5m])) / sum(rate(http_requests_total{source_namespace="${namespace}", pod=~"${serviceName}.*"}[5m])) * 100 or vector(0)`,
+      `sum(rate(http_requests_total{source_namespace="${namespace}", app="${serviceName}", status=~"5.."}[5m])) / sum(rate(http_requests_total{source_namespace="${namespace}", app="${serviceName}"}[5m])) * 100 or vector(0)`,
       startTime,
       endTime
     );
 
     // Query request rate over time
     const requestRateSeries = await this.queryMetricSeries(
-      `sum(rate(http_requests_total{source_namespace="${namespace}", pod=~"${serviceName}.*"}[1m])) or vector(0)`,
+      `sum(rate(http_requests_total{source_namespace="${namespace}", app="${serviceName}"}[1m])) or vector(0)`,
       startTime,
       endTime
     );
 
     // Query latency (P95) over time
     const latencySeries = await this.queryMetricSeries(
-      `histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{source_namespace="${namespace}", pod=~"${serviceName}.*"}[5m])) by (le)) * 1000 or vector(0)`,
+      `histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket{source_namespace="${namespace}", app="${serviceName}"}[5m])) by (le)) * 1000 or vector(0)`,
       startTime,
       endTime
     );
 
-    // Query current CPU and memory from Prometheus (cAdvisor metrics)
+    // Query current CPU and memory from Prometheus
+    // Try container metrics (cAdvisor with pod=~) first, fallback to process metrics (app=)
     const cpuResult = await this.prometheus.query(
-      `sum(rate(container_cpu_usage_seconds_total{namespace="${namespace}", pod=~"${serviceName}.*"}[5m])) * 100`
+      `sum(rate(container_cpu_usage_seconds_total{namespace="${namespace}", pod=~"${serviceName}.*"}[5m])) * 100 or avg(rate(process_cpu_seconds_total{source_namespace="${namespace}", app="${serviceName}"}[1m])) * 100 or vector(0)`
     );
     const memResult = await this.prometheus.query(
-      `sum(container_memory_usage_bytes{namespace="${namespace}", pod=~"${serviceName}.*"}) / sum(container_spec_memory_limit_bytes{namespace="${namespace}", pod=~"${serviceName}.*"}) * 100`
+      `sum(container_memory_working_set_bytes{namespace="${namespace}", pod=~"${serviceName}.*"}) / 1024 / 1024 or avg(process_resident_memory_bytes{source_namespace="${namespace}", app="${serviceName}"}) / 1024 / 1024 or vector(0)`
     );
 
     // Query pod count from Prometheus (kube-state-metrics)
     const podResult = await this.prometheus.query(
-      `count(kube_pod_status_phase{namespace="${namespace}", pod=~"${serviceName}.*", phase="Running"})`
+      `count(kube_pod_status_phase{namespace="${namespace}", pod=~"${serviceName}.*", phase="Running"}) or vector(0)`
     );
 
     // Fallback to K8s API for pod count if Prometheus returns nothing
@@ -401,10 +401,10 @@ export class VisionService extends EventEmitter<VisionServiceEvents> {
 
         // If we got pods, try to estimate CPU/Memory from process metrics in Prometheus
         // These are from prom-client's collectDefaultMetrics() - available in the app
-        // Use pod=~ matching since pods are named ${deploymentName}-xxxxx-xxxxx
+        // Use app= label (set by prometheus relabel config) for matching
         if (cpuUsage === 0) {
           const processCpuResult = await this.prometheus.query(
-            `avg(rate(process_cpu_seconds_total{source_namespace="${namespace}", pod=~"${serviceName}.*"}[1m])) * 100`
+            `avg(rate(process_cpu_seconds_total{source_namespace="${namespace}", app="${serviceName}"}[1m])) * 100`
           );
           if (processCpuResult.value !== undefined && isFinite(processCpuResult.value)) {
             cpuUsage = Math.min(processCpuResult.value, 100);
@@ -412,7 +412,7 @@ export class VisionService extends EventEmitter<VisionServiceEvents> {
         }
         if (memoryUsage === 0) {
           const processMemResult = await this.prometheus.query(
-            `avg(process_resident_memory_bytes{source_namespace="${namespace}", pod=~"${serviceName}.*"}) / 1024 / 1024 / 512 * 100`
+            `avg(process_resident_memory_bytes{source_namespace="${namespace}", app="${serviceName}"}) / 1024 / 1024 / 512 * 100`
           );
           if (processMemResult.value !== undefined && isFinite(processMemResult.value)) {
             // Estimate as % of 512MB assumed limit
