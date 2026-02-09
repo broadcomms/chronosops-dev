@@ -13,13 +13,13 @@
 
 ## Quick Reference
 
-Test 3 is the **key demonstration** for ChronosOps full self-regeneration capabilities.
+Test 3 is the **key demonstration** for ChronosOps' full self-regeneration capabilities.
 
 | Test Scenario                                                                                    | Estimated Time | Difficulty |
 | ------------------------------------------------------------------------------------------------ | -------------- | ---------- |
 | [Test 1: Standard API Generation](#test-1-standard-api-generation)                                  | 10-15 minutes  | Easy       |
 | [Test 2: Manual Incident Investigation](#test-2-manual-incident-investigation)                      | 5-10 minutes   | Easy       |
-| [Test 3: Flaky App with Self-Healing Evolution](#test-3-flaky-app-with-self-healing-code-evolution) **KEY DEOM** | 15-25 minutes  | Medium     |
+| [Test 3: Flaky App with Self-Healing Evolution](#test-3-flaky-app-with-self-healing-code-evolution) **KEY DEMO** | 15-25 minutes  | Medium     |
 | [Test 4: Fault Injection Endpoints](#test-4-fault-injection-endpoints-for-remediation-testing)      | 10-15 minutes  | Medium     |
 | [Test 5: Prompt Injection Testing Mode](#test-5-prompt-injection-testing-mode)                      | 15-20 minutes  | Advanced   |
 | [Test 6: Manual Code Evolution](#test-6-manual-code-evolution)                                      | 10-15 minutes  | Easy       |
@@ -51,7 +51,7 @@ Before testing, verify all systems are operational:
 
 1. Go to **Development Dashboard**
 2. Click on any **User Management API with simulated failure rate** app
-3. CLick on **"Open API Docs"**
+3. Click on **"Open API Docs"**
 4. Execute the **GET /users** endpoint multiple times to see random 500 errors
 5. Navigate to **Command Center** and watch for the error rate spike and incident creation
 6. Click on the incident and watch the investigation identify the root cause and trigger code evolution to fix the bug
@@ -203,22 +203,22 @@ Create a REST API for incident response with endpoints for triggering, resolving
 | Field       | Value                                                                                  |
 | ----------- | -------------------------------------------------------------------------------------- |
 | Title       | `High Spike in Latency`                                                          |
-| Description | `High spike has observed in contacts form submission  api`                   |
-| Severity    | `Medium` because system is healthy but degraded performance is assumed from graph observation   |
-| Application | `contact-form-submission-rest-api....` select the correspondign application under observation |
-| Start AI Investigation immediated | Mark the checkbox to start the OODA loop immediately after reporting |
+| Description | `High spike has been observed in contacts form submission API`                   |
+| Severity    | `Medium` because the system is healthy but degraded performance is assumed from graph observation   |
+| Application | `contact-form-submission-rest-api....` select the corresponding application under observation |
+| Start AI Investigation immediately | Mark the checkbox to start the OODA loop immediately after reporting |
 
-3. Click **"Create Incident"** this should create the incident, redirect you to the incident details view and start the investigation automatically
+3. Click **"Create Incident"**. This should create the incident, redirect you to the incident details view, and start the investigation automatically
 
 ### Step 2.3: Start Investigation
 If you are not automatically redirected to the incident details view after creating the incident, you can manually start the investigation by following these steps:
-1. From the Command center Scroll down and Locate the newly created incident in the list
+1. From the Command Center, scroll down and locate the newly created incident in the list
 2. Click the **"Investigate"** button on the incident card to open the details
-3. The investigation will begin automatically if not then click the start investigation button to initiate the OODA loop process
+3. The investigation will begin automatically. If not, click the Start Investigation button to initiate the OODA loop process
 
 ### Step 2.4: Monitor the OODA Loop
 
-In the incident details Watch the investigation progress through the phases:
+In the incident details, watch the investigation progress through the phases:
 
 | Phase               | What to Observe                                    |
 | ------------------- | -------------------------------------------------- |
@@ -231,7 +231,7 @@ In the incident details Watch the investigation progress through the phases:
 
 ### Step 2.5: Review Results
 
-In the incident investigation view
+In the incident investigation view:
 1. Review the **Evidence** panel (view the collected evidence - video frames, metrics, logs)
 2. Review the **Hypotheses** panel (AI-generated root cause theories)
 3. Review the **Actions** log (remediation attempts)
@@ -277,16 +277,16 @@ Create a REST API for managing users with CRUD operations. Include a subtle bug 
 
 4. Click **"+Create Backend"**
 
-5. In the development open the App development cycle details and click **"Start Cycle"** to begin the development process
+5. In the Development Dashboard, open the app development cycle details and click **"Start Cycle"** to begin the development process
 
-### Step 3.3: Wait for Deployment to complete
+### Step 3.3: Wait for Deployment to Complete
 
 1. Monitor the cycle as it progresses through all phases *ANALYZING → DESIGNING → CODING → TESTING → BUILDING → DEPLOYING → VERIFYING*
 2. Due to the random 500 error, the Cycle phases may need multiple Iterations and may fail at Verifying, but if Prompt Injection Testing is enabled, it will bypass the error and eventually complete successfully.
 3. If the cycle fails repeatedly at VERIFYING:
    - Cancel the cycle
    - Delete the app
-   - Ensure prompt injection is enabled in development setting
+   - Ensure prompt injection is enabled in development settings
    - Create a new cycle (the randomness may pass next time)
 
 ### Step 3.4: Verify the Bug Exists
@@ -296,13 +296,13 @@ Once deployed:
 1. Click **"Open Live App"** to access the running application
 2. Open the OpenAPI /docs endpoint `https://<chronosopsUrl>/apps/<generatedAppUrl>/docs` in the browser
 3. Locate the **GET /users** endpoint
-4. The endpoing description should mention "simulated failure"
+4. The endpoint description should mention "simulated failure"
 5. Click **"Try it out"** then click → **"Execute"**
-6. Click the **Execute multiple times** (10-30 times to trigger anomally detection)
+6. Click **Execute** multiple times (10-30 times to trigger anomaly detection)
 7. You should see approximately 50% of requests return `500 Internal Server Error`
-8. Continue Clicking execute to generate `500 Internal Server Error`
+8. Continue clicking Execute to generate `500 Internal Server Error`
 
-IMPORTANT: You should continue clicking execute through out to simulate real production error, if you don't continue the system may verify after restart, and or scale action and think that the bug is gone, if the bug is still generaing errors it will continue to escalate until it triggers the evolution.
+IMPORTANT: You should continue clicking Execute throughout to simulate real production errors. If you don't continue, the system may verify after restart and/or scale action and think that the bug is gone. If the bug is still generating errors, it will continue to escalate until it triggers the evolution.
 
 ### Step 3.5: Generate Traffic to Trigger Detection
 
@@ -315,17 +315,17 @@ IMPORTANT: You should continue clicking execute through out to simulate real pro
 1. Navigate to **Command Center**
 2. Select the application from the monitoring list
 3. Watch the monitoring graph for the deployed application
-4. When the error rate exceeds 5%, in less that 1 minute an **incident will be automatically created**
+4. When the error rate exceeds 5%, in less than 1 minute an **incident will be automatically created**
 5. The investigation will start automatically
 6. Select the view incident from the notification to watch the investigation in action
 
-Ensure to keep executing the /users endpoint to keep generating the error through the cycle until it is resolved.
+Continue executing the /users endpoint to keep generating errors throughout the cycle until it is resolved.
 
 > **Note**: Detection may take 1-2 minutes as the system collects enough data points to decide if it has to create an incident.
 
 ### Step 3.7: Watch the Self-Healing Process
 
-Once the incident is create, the investigation will progress through:
+Once the incident is created, the investigation will progress through:
 
 | Phase               | What Happens                                                |
 | ------------------- | ----------------------------------------------------------- |
@@ -333,15 +333,15 @@ Once the incident is create, the investigation will progress through:
 | **ORIENTING** | Correlates high error rate with code behavior               |
 | **DECIDING**  | Identifies the `Math.random() < 0.50` logic as root cause |
 | **ACTING**    | Attempts rollback first (will fail - no previous version)   |
-| **ACTING**    | Escalates to**Code Evolution**                        |
+| **ACTING**    | Escalates to **Code Evolution**                       |
 
 ### Step 3.8: Code Evolution in Action
 
 When Code Evolution triggers: 
-The system should creates a new evolution request with the requirement to fix the bug if the rollback, restart, and scale actions fail to resolve the issue.
+The system should create a new evolution request with the requirement to fix the bug if the rollback, restart, and scale actions fail to resolve the issue.
 
 To monitor the code evolution process:
-Navigate to the App Development Cycle details page, and click on the **"Edit Code"** and located the **Evolutions**.
+Navigate to the App Development Cycle details page, click on **"Edit Code"**, and locate the **Evolutions**.
 1. Click on the **Evolution** link to view the evolution cycles for the application
 2. Select the latest Evolution to see the details of the evolution process, including:
    - Evolution status (In Progress → Completed)
@@ -364,7 +364,7 @@ You could also see the evolution actions to revert the changes, rebuild and depl
 Navigate back to the Incidents dashboard and open the Incident details view to confirm the resolution:
 1. The investigation should complete with status **"DONE"** or **RESOLVED** in the incident details view
 2. The application should now show **healthy** status (green) after some time
-3. Test the API again by Executing the /users endpoing there should be no more random 500 errors!
+3. Test the API again by executing the /users endpoint — there should be no more random 500 errors!
 
 ### Expected Outcome
 
@@ -380,10 +380,10 @@ Navigate back to the Incidents dashboard and open the Incident details view to c
 
 | Issue                            | Solution                                                                                        |
 | -------------------------------- | ----------------------------------------------------------------------------------------------- |
-| Cycle keeps failing at VERIFYING | Cancel, delete, and recreate. The 50% failure is random. To ensure it doesn't get caught again at VERIFING enable Prompt Injection in the Development Setting (Orange)                                        |
-| No monitoring graph appears      | Refresh the browser. If persist, delete the cycle, wait 30 seconds, recreate. Check that the namespace has the monitoring label. |
+| Cycle keeps failing at VERIFYING | Cancel, delete, and recreate. The 50% failure is random. To ensure it doesn't get caught again at VERIFYING, enable Prompt Injection in the Development Settings (Orange).                                        |
+| No monitoring graph appears      | Refresh the browser. If it persists, delete the cycle, wait 30 seconds, and recreate. Check that the namespace has the monitoring label. |
 | Incident not auto-created        | Continue generating traffic. Ensure error rate is sustained above 5% for at least 30 seconds.   |
-| Code Evolution not triggered     | Check if simpler remediations (rollback) succeeded. Code Evolution is the last resort if errors does not go away.          |
+| Code Evolution not triggered     | Check if simpler remediations (rollback) succeeded. Code Evolution is the last resort if errors do not go away.          |
 | API docs don't load              | The pod may not be ready. Wait 60 seconds and refresh. If still failing, delete and recreate.   |
 
 ---
@@ -447,8 +447,8 @@ Once deployed, open the API docs and look for these endpoints:
 
 1. Make a code change through Code Evolution (or redeploy)
 2. Execute `POST /bugs/enable-error-rate`
-3. When incident is created and investigated
-4. The AI should attempt **Rollback** to previous version
+3. When the incident is created and investigated
+4. The AI should attempt a **Rollback** to the previous version
 5. Verify the app returns to healthy state
 
 ### Expected Outcome
@@ -552,23 +552,23 @@ Modify the contact form submission API to include a new endpoint for retrieving 
 Add a GET /contacts endpoint that returns a list of all submitted contacts with their name, email, message, and submission timestamp.
 ```
 
-#### Example A: Add a New Endpoint
-Mofify the user management API to include a new endpoint that provides statistics about the users. Using the following requirement:
+#### Example B: Add a New Endpoint
+Modify the user management API to include a new endpoint that provides statistics about the users. Using the following requirement:
 ```
 Add a new GET /users/stats endpoint that returns the total count of users and the timestamp of the last created user
 ```
 
-#### Example B: Add Input Validation
+#### Example C: Add Input Validation
 ```
 Add email format validation to the POST /users endpoint. Return a 400 Bad Request with a descriptive error message if the email is invalid
 ```
 
-#### Example C: Add Pagination Parameters
+#### Example D: Add Pagination Parameters
 ```
 Modify the GET /products endpoint to accept optional query parameters: page (default 1) and limit (default 10) for pagination
 ```
 
-#### Example D: Fix a Bug
+#### Example E: Fix a Bug
 ```
 Fix the issue where deleted users are still returned in the GET /users list. Filter out users with deletedAt timestamp
 ```
