@@ -56,6 +56,8 @@ chronosops-frames-*/
 demo/recordings/*
 !demo/recordings/.gitkeep
 
+api.logs
+
 # Secrets
 *.pem
 *.key

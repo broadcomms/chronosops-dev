@@ -92,6 +92,22 @@ The Development and Investigation OODA loops are fully integrated to create an a
 - Docker (for demo stack)
 - Kubernetes cluster (optional, for real deployments)
 
+
+
+### Enable Kubernetes in Docker Desktop
+1. Open Docker Desktop -> Click the Whale icon in system tray
+2. Go to Settings ( ⚙️ Gear icon located on top navigation)
+3. Click Kubernetes in the left sidebar
+4. Check "Enable Kubernetes"
+5. Click "Apply"
+6. Click "Install" to install the cluster (docker-desktop, kubeadm)
+
+Wait for 3-5 minutes for cluster to start, then create the following namespaces:
+```
+kubectl create namespace demo
+kubectl create namespace development
+```
+
 ### Installation
 
 ```bash
@@ -122,6 +138,12 @@ pnpm build
 # Start development servers
 pnpm dev
 ```
+
+### Web UI
+Access the UI: http://localhost:5174/
+
+
+
 
 ### API Server
 

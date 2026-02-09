@@ -1,8 +1,21 @@
 # ChronosOps Infrastructure
-# Docker Compose for Prometheus metrics collection
+# Docker Compose for Prometheus metrics collection and local Docker registry
 # Scrapes metrics from apps deployed via ChronosOps Development Dashboard
 
 services:
+  # =========================================
+  # Local Docker Registry
+  # Required for K8s to pull images built by ChronosOps
+  # =========================================
+  registry:
+    image: registry:2
+    container_name: chronosops-registry
+    ports:
+      - "5000:5000"
+    volumes:
+      - registry-data:/var/lib/registry
+    restart: unless-stopped
+
   # =========================================
   # Prometheus - Metrics Collection
   # Scrapes /metrics from ChronosOps generated apps
@@ -32,3 +45,4 @@ services:
 
 volumes:
   prometheus-data:
+  registry-data:

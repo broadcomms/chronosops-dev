@@ -56,7 +56,7 @@ export const DEFAULT_BUILD_CONFIG: BuildOrchestratorConfig = {
     pushing: 180000,    // 3 minutes
   },
   requiredCoverage: 80,
-  skipPush: true,  // Skip by default for local development
+  skipPush: false, // Push to local registry so K8s can pull images
   skipLint: true,  // Skip ESLint since we validate with TypeScript - avoids ESLint version conflicts
   skipTests: true, // Skip tests in build phase - tests are generated but need proper vitest config
 };
