@@ -299,11 +299,11 @@ export class PrometheusClient {
 
     // Query: Error rate = 5xx responses / total responses
     // Using 1m window for faster recovery display after fixes
-    // Use source_namespace and pod regex to match VisionService queries (app metrics use relabeled labels)
+    // Use source_namespace and app= label (set by Prometheus relabel config)
     const query = `
-      sum(rate(http_requests_total{source_namespace="${namespace}", pod=~"${deployment}.*", status=~"5.."}[1m]))
+      sum(rate(http_requests_total{source_namespace="${namespace}", app="${deployment}", status=~"5.."}[1m]))
       /
-      sum(rate(http_requests_total{source_namespace="${namespace}", pod=~"${deployment}.*"}[1m]))
+      sum(rate(http_requests_total{source_namespace="${namespace}", app="${deployment}"}[1m]))
     `.replace(/\s+/g, ' ').trim();
 
     const result = await this.query(query);
@@ -335,10 +335,10 @@ export class PrometheusClient {
     const threshold = 2; // 2 seconds
 
     // Using 1m window for faster recovery display after fixes
-    // Use source_namespace and pod regex to match VisionService queries (app metrics use relabeled labels)
+    // Use source_namespace and app= label (set by Prometheus relabel config)
     const query = `
       histogram_quantile(0.99,
-        sum(rate(http_request_duration_seconds_bucket{source_namespace="${namespace}", pod=~"${deployment}.*"}[1m]))
+        sum(rate(http_request_duration_seconds_bucket{source_namespace="${namespace}", app="${deployment}"}[1m]))
         by (le)
       )
     `.replace(/\s+/g, ' ').trim();
@@ -371,8 +371,9 @@ export class PrometheusClient {
   ): Promise<Omit<PrometheusMetricAnomaly, 'app' | 'deployment' | 'namespace'> | null> {
     const threshold = 3;
 
+    // kube_pod_container_status_restarts_total comes from kube-state-metrics (has pod label)
     const query = `
-      sum(increase(kube_pod_container_status_restarts_total{namespace="${namespace}", pod=~"${deployment}.*"}[15m]))
+      sum(increase(kube_pod_container_status_restarts_total{namespace="${namespace}", pod=~"${deployment}.*"}[15m])) or vector(0)
     `.replace(/\s+/g, ' ').trim();
 
     const result = await this.query(query);
@@ -402,10 +403,14 @@ export class PrometheusClient {
   ): Promise<Omit<PrometheusMetricAnomaly, 'app' | 'deployment' | 'namespace'> | null> {
     const threshold = 0.9; // 90%
 
+    // Try container metrics first (cAdvisor, has pod label), fall back to process metrics (app label)
+    // Process metrics use 512MB as assumed limit
     const query = `
       sum(container_memory_usage_bytes{namespace="${namespace}", pod=~"${deployment}.*"})
       /
       sum(container_spec_memory_limit_bytes{namespace="${namespace}", pod=~"${deployment}.*"})
+      or
+      avg(process_resident_memory_bytes{source_namespace="${namespace}", app="${deployment}"}) / (512 * 1024 * 1024)
     `.replace(/\s+/g, ' ').trim();
 
     const result = await this.query(query);
